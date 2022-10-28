@@ -1,21 +1,26 @@
 package com.newrain.concurrency.thread.daemon;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author newRain
  * @description 守护线程示例
  */
+@Slf4j
 public class DaemonThreadExample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ThreadA threadA = new ThreadA();
         ThreadB threadB = new ThreadB();
         threadA.setDaemon(true);
         threadB.start();
         threadA.start();
         Thread threadMain = Thread.currentThread();
-        System.out.println("线程A是不是守护线程 ：" + threadA.isDaemon());
-        System.out.println("线程B是不是守护线程 ：" + threadB.isDaemon());
-        System.out.println("线程main是不是守护线程 ：" + threadMain.isDaemon());
+        threadMain.setDaemon(true);
+        log.debug("线程A是不是守护线程:{}", threadA.isDaemon());
+        log.debug("线程B是不是守护线程:{}", threadB.isDaemon());
+        log.debug("线程main是不是守护线程:{}", threadMain.isDaemon());
+        Thread.sleep(50000);
     }
 
 }

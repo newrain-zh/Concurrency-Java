@@ -1,36 +1,38 @@
 package com.newrain.concurrency.thread.interrupt;
 
-/**
- * Created by monster_zzq on 2016/7/7.
- */
-public class ThreadInterruptExample2 extends Thread {
+import lombok.extern.slf4j.Slf4j;
 
-    @Override
+/**
+ * 捕捉InterruptedException、Exception 终止线程运行示例
+ *
+ * @author newRain
+ * @description 线程中断示例
+ */
+@Slf4j
+public class ThreadInterruptExample2 implements Runnable {
     public void run() {
-        boolean stop = false;
-        while (!stop) {
-            System.out.println(" this thread is running...");
-            if (isInterrupted()) {
-                System.out.println("break....");
-                return;
+        while (true) {
+            try {
+                Thread.sleep(100);
+                log.debug("this thread is running...");
+            } catch (Exception e) {
+                log.error("InterruptedException");
+                break;
             }
         }
-        System.out.println("this thread exiting under request....");
+        log.debug("this thread exiting under request....");
     }
 
     public static void main(String[] args) throws InterruptedException {
-        ThreadInterruptExample2 thread = new ThreadInterruptExample2();
-        System.out.println(" start thread .... ");
+        ThreadInterruptExample2 threadInterruptExample3 = new ThreadInterruptExample2();
+        Thread thread = new Thread(threadInterruptExample3);
+        log.debug("start thread .... ");
         thread.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(" interrupt thread .... ");
+        log.debug("interrupt thread ....");
+        Thread.sleep(3000);
         thread.interrupt();
-        System.out.println("线程是否中断：" + thread.isInterrupted());
-        //    Thread.sleep(3000);
-        System.out.println("application over ....");
+        //thread.isInterrupted() = false
+        log.debug("线程是否中断：{}:{}", thread.getName(), thread.isInterrupted());
+        log.debug("application over...");
     }
 }

@@ -1,17 +1,21 @@
 package com.newrain.concurrency.thread.interrupt;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author newRain
  * @description 中断线程代码运行示例
  */
+@Slf4j
 public class ThreadInterruptExample extends Thread {
 
     @Override
     public void run() {
         while (true) {
+            log.debug("thread running");
             System.out.println(" thread running");
             if (isInterrupted()) {
-                System.out.println(" thread interrupt ....");
+                log.debug("thread interrupt ....");
                 return;
             }
         }
@@ -24,7 +28,7 @@ public class ThreadInterruptExample extends Thread {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("main error:", e);
         }
         thread.interrupt();//发出中断信号
     }

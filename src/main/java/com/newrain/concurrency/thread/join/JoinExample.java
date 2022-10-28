@@ -1,4 +1,6 @@
-package com.newrain.concurrency.thread.jointest;
+package com.newrain.concurrency.thread.join;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -7,38 +9,40 @@ import java.util.concurrent.TimeUnit;
  * @author newRain
  * @description join方法可以让线程顺序执行
  */
-public class JoinTest implements Runnable {
+@Slf4j
+public class JoinExample implements Runnable {
 
     private String name;
 
-    public JoinTest(String name) {
+    public JoinExample(String name) {
         this.name = name;
     }
 
     @Override
     public void run() {
+        log.debug("{} start", name);
         System.out.printf("%s begins: %s\n", name, new Date());
         try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("e", e);
         }
-        System.out.printf("%s has finished: %s\n", name, new Date());
+        log.debug("{} has finished", name);
     }
 
     public static void main(String[] args) {
-        Thread thread1 = new Thread(new JoinTest("One"));
-        Thread thread2 = new Thread(new JoinTest("Two"));
+        Thread thread1 = new Thread(new JoinExample("One"));
+        Thread thread2 = new Thread(new JoinExample("Two"));
         try {
             thread1.start();
-            thread2.start();
             thread1.join();
+            thread2.start();
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("error", e);
         }
 
-        System.out.println("Main thread is finished");
+        log.debug("Main thread is finished");
     }
 
 }
