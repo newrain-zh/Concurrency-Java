@@ -1,9 +1,12 @@
 package com.newrain.concurrency.thread.interrupt;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author newRain
  * @description 线程中断示例
  */
+@Slf4j
 public class PrimeGenerator extends Thread {
 
     @Override
@@ -11,11 +14,11 @@ public class PrimeGenerator extends Thread {
         long number = 1L;
         while (true) {
             if (isPrime(number)) {
-                System.out.printf("Number %d is Prime \n", number);
+                log.debug("Number {} is Prime", number);
             }
 
             if (isInterrupted()) {
-                System.out.println("The Prime Generator has been Interrupted");
+                log.debug("The Prime Generator has been Interrupted");
                 return;
             }
             number++;
@@ -40,7 +43,7 @@ public class PrimeGenerator extends Thread {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("main error:", e);
         }
         thread.interrupt();
     }

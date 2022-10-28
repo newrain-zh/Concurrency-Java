@@ -14,20 +14,20 @@ public class ConditionExample {
     /**
      * 容器
      */
-    private LinkedList<String> buffer;
+    private final LinkedList<String> buffer;
     /**
      * 容器的最大size
      */
-    private int maxSize;
-    private Lock lock;
+    private final int maxSize;
+    private final Lock lock;
     /**
      * 容器已满信号量
      */
-    private Condition fullCondition;
+    private final Condition fullCondition;
     /**
      * 容器未满信号量
      */
-    private Condition notFullCondition;
+    private final Condition notFullCondition;
 
     ConditionExample(int maxSize) {
         this.maxSize = maxSize;

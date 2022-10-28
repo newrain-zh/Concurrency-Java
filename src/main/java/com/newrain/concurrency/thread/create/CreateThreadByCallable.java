@@ -1,5 +1,7 @@
 package com.newrain.concurrency.thread.create;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
@@ -7,12 +9,13 @@ import java.util.concurrent.FutureTask;
  * @author newRain
  * @description Callable 创建线程示例
  */
+@Slf4j
 public class CreateThreadByCallable implements Callable<String> {
 
     @Override
     public String call() throws Exception {
         for (int i = 0; i < 10; i++) {
-            System.out.println("thread call:" + i);
+            log.debug("thread call:{}", i);
         }
         return "call";
     }
@@ -30,6 +33,6 @@ public class CreateThreadByCallable implements Callable<String> {
 //    } catch (InterruptedException | ExecutionException e) {
 //      e.printStackTrace();
 //    }
-        System.out.println("main thread is end");
+        log.debug("main thread end ....");
     }
 }

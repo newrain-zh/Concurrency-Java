@@ -1,32 +1,37 @@
 package com.newrain.concurrency.thread.interrupt;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
+ * 调用interrupt() 线程内部不做处理代码示例
+ *
  * @author newRain
- * @description
+ * @description 线程中断示例
  */
+@Slf4j
 public class ThreadInterruptExample1 implements Runnable {
     @Override
     public void run() {
         boolean stop = false;
         while (!stop) {
-            System.out.println(" this thread is running...");
+            log.debug("this thread is running...");
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < 1000) {
             }
         }
-        System.out.println("this thread exiting under request....");
+        log.debug("this thread exiting under request....");
     }
 
     public static void main(String[] args) throws InterruptedException {
         Thread thread = new Thread(new ThreadInterruptExample1(), "Interrupt thread");
-        System.out.println(" start thread .... ");
+        log.debug("start thread ....");
         thread.start();
         Thread.sleep(3000);
-        System.out.println(" interrupt thread .... ");
-        //注意此处线程不会中断
+        log.debug("interrupt thread ....");
+        //注意此处调用interrupt方法 开启的线程不会中断
         thread.interrupt();
-        System.out.println("线程是否中断：" + thread.isInterrupted());
-        //    Thread.sleep(3000);
-        System.out.println("application over ....");
+        log.debug("线程是否中断：{}", thread.isInterrupted());
+        Thread.sleep(3000);
+        log.debug("application over ....");
     }
 }

@@ -1,16 +1,21 @@
 package com.newrain.concurrency.thread.pipedStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 
 /**
- * Created by zzqno on 2017-6-8.
  * 线程间通信 管道字符流
  * PipedReader
  * PipedWriter
+ *
+ * @author newRain
+ * @description 线程间通信 管道字符流
  */
-public class BufferTest {
+@Slf4j
+public class PipedByBufferExample {
 
     public static void main(String[] args) {
         WriterBuffer writerBuffer = new WriterBuffer();
@@ -22,24 +27,25 @@ public class BufferTest {
             pipedReader.connect(pipedWriter);
             ReadBufferThread readBufferThread = new ReadBufferThread(readBuffer, pipedReader);
             readBufferThread.start();
-            Thread.sleep(2000);
+            //此处可调整 调整时长
+            Thread.sleep(100);
             WriteBufferThread writeBufferThread = new WriteBufferThread(writerBuffer, pipedWriter);
             writeBufferThread.start();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            log.error("error", e);
         }
     }
 }
 
+@Slf4j
 class WriterBuffer {
-
     public void writeMethod(PipedWriter writer) {
         try {
-            System.out.println("write :");
+            log.debug("PipedWriter writer start ");
             for (int i = 0; i < 300; i++) {
                 String outData = "" + (i + 1);
                 writer.write(outData);
-                System.out.println("outData:" + outData);
+                log.debug("write:{}", outData);
             }
             writer.close();
         } catch (IOException e) {
@@ -48,44 +54,46 @@ class WriterBuffer {
     }
 }
 
+@Slf4j
 class ReadBuffer {
     public void readMethod(PipedReader pipedReader) {
         try {
-            System.out.println("read :");
+            log.debug("ReadBuffer start read");
             char[] bytes = new char[3];
             //当没有数据写入时 线程会阻塞在此处
             int readLen = pipedReader.read(bytes);
             while (readLen != -1) {
                 String newData = new String(bytes, 0, readLen);
                 System.out.println("readData:" + newData);
+                log.debug("readData:{}", newData);
                 readLen = pipedReader.read(bytes);
             }
             System.out.println();
             pipedReader.close();
         } catch (IOException e) {
-
+            log.error("readMethod error:", e);
         }
     }
 }
 
 class WriteBufferThread extends Thread {
-    private WriterBuffer ReadBuffer;
-    private PipedWriter outputStream;
+    private final WriterBuffer readBuffer;
+    private final PipedWriter outputStream;
 
     public WriteBufferThread(WriterBuffer writeData, PipedWriter outputStream) {
-        this.ReadBuffer = writeData;
+        this.readBuffer = writeData;
         this.outputStream = outputStream;
     }
 
     @Override
     public void run() {
-        ReadBuffer.writeMethod(outputStream);
+        readBuffer.writeMethod(outputStream);
     }
 }
 
 class ReadBufferThread extends Thread {
-    private ReadBuffer readData;
-    private PipedReader pipedReader;
+    private final ReadBuffer readData;
+    private final PipedReader pipedReader;
 
     public ReadBufferThread(ReadBuffer readData, PipedReader pipedReader) {
         this.pipedReader = pipedReader;

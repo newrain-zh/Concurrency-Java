@@ -5,11 +5,12 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ABA问题模拟，线程并发中，导致ABA问题，解决方案是使用|AtomicMarkableReference
  * 请参看相应的例子：AtomicStampedReferenceTest、AtomicMarkableReferenceTest
+ *
+ * @author newRain
  */
-public class AtomicReferenceABATest {
+public class AtomicReferenceAbaExample {
 
-    public final static AtomicReference<String> ATOMIC_REFERENCE = new AtomicReference<
-            >("abc");
+    public final static AtomicReference<String> ATOMIC_REFERENCE = new AtomicReference<>("abc");
 
     public static void main(String[] args) {
         for (int i = 0; i < 100; i++) {
