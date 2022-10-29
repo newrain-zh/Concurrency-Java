@@ -1,4 +1,4 @@
-package com.newrain.concurrency.aqs.signal.cyclicBarrier;
+package com.newrain.concurrency.utils.cyclicBarrier;
 
 import java.util.Date;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package com.newrain.concurrency.aqs.signal.countdownlatch;
+package com.newrain.concurrency.utils.countdownlatch;
 
 import java.util.HashMap;
 import java.util.Map;

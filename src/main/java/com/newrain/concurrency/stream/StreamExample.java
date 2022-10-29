@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * @author newrain
+ * @description 并行流
+ */
 public class StreamExample {
 
 

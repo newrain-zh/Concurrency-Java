@@ -1,4 +1,4 @@
-package com.newrain.concurrency.aqs.signal.semaphore;
+package com.newrain.concurrency.utils.semaphore;
 
 import java.util.concurrent.CountDownLatch;
 

@@ -1,16 +1,20 @@
 package com.newrain.concurrency.producerconsumer;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by zzqno on 2017-5-8.
+ * @author newRain
+ * @description 生产者消费者示例
  */
 public class ProducerAndConsumerTest {
 
 
     public static void main(String[] args) {
         //Creating shared object
-        ArrayList list = new ArrayList();
+        List<Integer> list = new ArrayList();
 
         //Creating Producer and Consumer Thread
         Thread prodThread = new Thread(new ProducerTest(list));
@@ -22,12 +26,12 @@ public class ProducerAndConsumerTest {
     }
 }
 
-//Producer Class in java
+@Slf4j
 class ProducerTest implements Runnable {
 
-    private final ArrayList arrayList;
+    private final List<Integer> arrayList;
 
-    public ProducerTest(ArrayList arrayList) {
+    public ProducerTest(List<Integer> arrayList) {
         this.arrayList = arrayList;
     }
 
@@ -35,19 +39,19 @@ class ProducerTest implements Runnable {
     @Override
     public void run() {
         for (int i = 0; i < 10; i++) {
-            System.out.println("Produced: " + i);
+            log.debug("Produced:{}", i);
             arrayList.add(i);
         }
     }
 
 }
 
-//Consumer Class in Java
+@Slf4j
 class ConsumerTest implements Runnable {
 
-    private final ArrayList arrayList;
+    private final List<Integer> arrayList;
 
-    public ConsumerTest(ArrayList arrayList) {
+    public ConsumerTest(List<Integer> arrayList) {
         this.arrayList = arrayList;
     }
 
@@ -55,10 +59,9 @@ class ConsumerTest implements Runnable {
     public void run() {
         while (true) {
             for (int i = 0; i < arrayList.size(); i++) {
-                System.out.println("Consumed: " + arrayList.get(i));
+                log.debug("Consumed:{}", arrayList.get(i));
                 arrayList.remove(i);
             }
-
         }
     }
 }

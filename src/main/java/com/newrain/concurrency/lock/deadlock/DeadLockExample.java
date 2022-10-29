@@ -9,7 +9,7 @@ import java.util.Date;
  * @author newRain
  * @description 死锁代码示例
  */
-public class LockExample {
+public class DeadLockExample {
     public static String obj1 = "obj1";
     public static String obj2 = "obj2";
     public static ThreadMXBean mxBean = ManagementFactory.getThreadMXBean();
@@ -37,10 +37,10 @@ class LockA implements Runnable {
         try {
             System.out.println(new Date().toString() + " LockA 开始执行");
             while (true) {
-                synchronized (LockExample.obj1) {
+                synchronized (DeadLockExample.obj1) {
                     System.out.println(new Date().toString() + " LockA 锁住 obj1");
                     Thread.sleep(3000); // 此处等待是给B能锁住机会
-                    synchronized (LockExample.obj2) {
+                    synchronized (DeadLockExample.obj2) {
                         System.out.println(new Date().toString() + " LockA 锁住 obj2");
                         Thread.sleep(60 * 1000); // 为测试，占用了就不放
                     }
@@ -58,10 +58,10 @@ class LockB implements Runnable {
         try {
             System.out.println(new Date().toString() + " LockB 开始执行");
             while (true) {
-                synchronized (LockExample.obj2) {
+                synchronized (DeadLockExample.obj2) {
                     System.out.println(new Date().toString() + " LockB 锁住 obj2");
                     Thread.sleep(3000); // 此处等待是给A能锁住机会
-                    synchronized (LockExample.obj1) {
+                    synchronized (DeadLockExample.obj1) {
                         System.out.println(new Date().toString() + " LockB 锁住 obj1");
                         Thread.sleep(60 * 1000); // 为测试，占用了就不放
                     }

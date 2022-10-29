@@ -40,7 +40,7 @@ class ThreadB extends Thread {
 
     @Override
     public void run() {
-        stringService.print("AA");
+        StringService.print("AA");
     }
 }
 
@@ -54,6 +54,6 @@ class ThreadA extends Thread {
 
     @Override
     public void run() {
-        stringService.print("AA");
+        StringService.print("AA");
     }
 }

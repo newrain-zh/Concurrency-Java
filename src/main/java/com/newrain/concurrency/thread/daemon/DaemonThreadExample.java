@@ -12,6 +12,7 @@ public class DaemonThreadExample {
     public static void main(String[] args) throws InterruptedException {
         ThreadA threadA = new ThreadA();
         ThreadB threadB = new ThreadB();
+        //设置为守护线程 必须在线程启动前调用 即 start方法之前
         threadA.setDaemon(true);
         threadB.start();
         threadA.start();
