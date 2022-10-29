@@ -1,7 +1,5 @@
 /**
- * Created by zzqno on 2017-6-5.
- *
- * volatile 使用和测试
- *
+ * @description volatile 使用和测试
+ * @author newRain
  */
 package com.newrain.concurrency.keyword;

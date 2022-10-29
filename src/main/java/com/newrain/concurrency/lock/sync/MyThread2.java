@@ -5,15 +5,15 @@ package com.newrain.concurrency.lock.sync;
  */
 public class MyThread2 extends Thread {
 
-    private MyTask myTask;
+    private HalfSynchronizedExample halfSynchronizedExample;
 
-    public MyThread2(MyTask myTask) {
-        this.myTask = myTask;
+    public MyThread2(HalfSynchronizedExample halfSynchronizedExample) {
+        this.halfSynchronizedExample = halfSynchronizedExample;
     }
 
     @Override
     public void run() {
         super.run();
-        this.myTask.doLongTimeTask();
+        this.halfSynchronizedExample.doLongTimeTask();
     }
 }

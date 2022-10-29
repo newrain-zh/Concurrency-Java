@@ -36,8 +36,8 @@ public class ReentrantReadWriteLockExample {
                 //不存在该值 释放读锁
                 readLock.unlock();
                 try {
-                    //上写锁
                     writeLock.lock();
+                    //上写锁
                     cache.put(k, v);
                 } finally {
                     //释放写锁
