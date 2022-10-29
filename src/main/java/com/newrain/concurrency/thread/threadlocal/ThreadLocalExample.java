@@ -15,13 +15,13 @@ public class ThreadLocalExample {
     private static ThreadLocal<String> threadLocal = new ThreadLocal<>();
 
     public static void main(String[] args) {
-//        threadLocal.set("hello world");
         new Thread(() -> {
             threadLocal.set("hello world");
             log.info("thread:{}", threadLocal.get());//输出hello world
 
         }).start();
-        log.info("main thread:{}", threadLocal.get());//输出null
+        //输出null
+        log.info("main thread:{}", threadLocal.get());
 
 
     }

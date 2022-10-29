@@ -1,4 +1,4 @@
-package com.newrain.concurrency.thread.threadpool;
+package com.newrain.concurrency.thread.threadpool.example;
 
 import java.util.Date;
 import java.util.concurrent.Executors;
