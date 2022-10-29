@@ -1,7 +1,9 @@
-package com.newrain.concurrency.thread.threadlocal;
+package com.newrain.concurrency.thread.threadlocal.custom;
 
 /**
- * Created by zzqno on 2017-4-5.
+ *
+ * @author zzqno
+ * @date 2017-4-5
  */
 public class MyThreadLocalTest {
 

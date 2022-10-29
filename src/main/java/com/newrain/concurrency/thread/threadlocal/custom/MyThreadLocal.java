@@ -1,4 +1,4 @@
-package com.newrain.concurrency.thread.threadlocal;
+package com.newrain.concurrency.thread.threadlocal.custom;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class MyThreadLocal<T> {
 
 
-    private Map<Thread, T> container = Collections.synchronizedMap(new HashMap<Thread, T>());
+    private Map<Thread, T> container = Collections.synchronizedMap(new HashMap<>());
 
     public void set(T value) {
         container.put(Thread.currentThread(), value);

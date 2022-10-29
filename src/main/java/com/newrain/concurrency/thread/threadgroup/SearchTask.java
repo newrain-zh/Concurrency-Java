@@ -5,7 +5,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by monster_zzq on 2016/7/14.
+ * @author newRain
+ * @date 2016/7/14
  */
 public class SearchTask implements Runnable {
 
@@ -16,7 +17,10 @@ public class SearchTask implements Runnable {
         this.result = result;
     }
 
-    //它会调用doTask() 方法和等待它结束或者接收一个 InterruptedException 异常。 这方法会写信息表明开始，结束，或者线程中断。
+    /**
+     * 它会调用doTask() 方法和等待它结束或者接收一个 InterruptedException 异常。
+     * 这方法会写信息表明开始，结束，或者线程中断。
+     */
     @Override
     public void run() {
         String name = Thread.currentThread().getName();
@@ -31,7 +35,11 @@ public class SearchTask implements Runnable {
         System.out.printf("Thread %s: End\n", name);
     }
 
-    //实现 doTask() 方法。它会创建一个 Random 对象生一个随机数字并用这个数字调用 sleep() 方法 。
+    /**
+     * doTask() 方法。它会创建一个 Random 对象生一个随机数字并用这个数字调用 sleep() 方法 。
+     *
+     * @throws InterruptedException
+     */
     private void doTask() throws InterruptedException {
         Random random = new Random((new Date()).getTime());
         int value = (int) (random.nextDouble() * 100);
