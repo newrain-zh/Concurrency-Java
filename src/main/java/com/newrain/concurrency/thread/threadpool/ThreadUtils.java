@@ -2,6 +2,7 @@ package com.newrain.concurrency.thread.threadpool;
 
 
 import com.newrain.concurrency.thread.factory.MyThreadFactoryExample;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author newRain
  * @description 关闭线程池代码示例
  */
+@Slf4j
 public class ThreadUtils {
 
     /**
@@ -34,7 +36,7 @@ public class ThreadUtils {
                 threadPool.shutdownNow();
                 //重试60S，如果还没关闭再次重试。
                 if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
-                    System.out.println("线程池中的任务未正常执行结束");
+                    log.debug("线程池中的任务未正常执行结束");
                 }
             }
         } catch (InterruptedException e) {
