@@ -1,4 +1,4 @@
-package com.newrain.concurrency.utils;
+package com.newrain.concurrency.lock.custom;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
