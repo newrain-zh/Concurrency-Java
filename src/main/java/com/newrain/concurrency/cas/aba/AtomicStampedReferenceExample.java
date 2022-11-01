@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicStampedReference;
  * AtomicStampedReference 解决ABA问题代码示例
  * @author newRain
  */
-public class AtomicMarkableReferenceAbaExample {
+public class AtomicStampedReferenceExample {
 
     private static AtomicStampedReference<Integer> atomicStampedReference = new AtomicStampedReference(0, 0);
 

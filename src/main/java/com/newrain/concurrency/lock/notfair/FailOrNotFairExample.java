@@ -1,6 +1,6 @@
 package com.newrain.concurrency.lock.notfair;
 
-import com.newrain.concurrency.lock.IncrementData;
+import com.newrain.concurrency.lock.utils.IncrementData;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

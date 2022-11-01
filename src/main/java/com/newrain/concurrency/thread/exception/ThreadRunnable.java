@@ -8,6 +8,7 @@ public class ThreadRunnable implements Runnable {
 
     @Override
     public void run() {
+        //模拟异常
         int parseInt = Integer.parseInt("TTTT");
     }
 
