@@ -1,7 +1,8 @@
 package com.newrain.concurrency.lock.sync.innerclass;
 
 /**
- * Created by zzqno on 2017-6-3.
+ * @author newRain
+ * @description 内部类测试
  */
 public class InnerClass {
     private String username;
@@ -24,8 +25,7 @@ public class InnerClass {
     }
 
 
-
-     class privateClass {
+    class privateClass {
         private String age;
         private String address;
 
@@ -50,7 +50,7 @@ public class InnerClass {
         InnerClass publicClass = new InnerClass();
         publicClass.setPassword("passwordValue");
         publicClass.setUsername("usernameValue");
-        System.out.println(publicClass.getUsername() +" " + publicClass.getPassword());
+        System.out.println(publicClass.getUsername() + " " + publicClass.getPassword());
         privateClass privateClass = publicClass.new privateClass();
         privateClass.setAddress("addressValue");
         privateClass.setAge("ageValue");
