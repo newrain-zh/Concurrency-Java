@@ -85,7 +85,8 @@ public class CountDownLatchExample {
         try {
             //主线程等待所有统计指标执行完毕
             COUNT_DOWN_LATCH.await();
-            long endTime = System.currentTimeMillis();//记录结束时间
+            //记录结束时间
+            long endTime = System.currentTimeMillis();
             log.debug("------统计指标全部完成--------");
             log.debug("统计结果为:{}", MAP);
             log.debug("任务总执行时间为:{}秒", (endTime - startTime) / 1000);
