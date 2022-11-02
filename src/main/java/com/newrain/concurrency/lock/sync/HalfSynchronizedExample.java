@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author newRain
- * @date 2017-6-3
- * 一半同步一半异步
+ * @description 一半同步一半异步
  */
 @Slf4j
 public class HalfSynchronizedExample {

@@ -1,5 +1,7 @@
 package com.newrain.concurrency.lock.deadlock;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -9,6 +11,7 @@ import java.util.Date;
  * @author newRain
  * @description 死锁代码示例
  */
+@Slf4j
 public class DeadLockExample {
     public static String obj1 = "obj1";
     public static String obj2 = "obj2";
@@ -23,7 +26,7 @@ public class DeadLockExample {
         long[] deadlockedThreads = mxBean.findDeadlockedThreads();
         if (deadlockedThreads.length > 0) {
             for (long pid : deadlockedThreads) {
-                ThreadInfo threadInfo = mxBean.getThreadInfo(pid,Integer.MAX_VALUE);
+                ThreadInfo threadInfo = mxBean.getThreadInfo(pid, Integer.MAX_VALUE);
                 System.out.println(threadInfo);
             }
         }
@@ -31,18 +34,21 @@ public class DeadLockExample {
     }
 }
 
+@Slf4j
 class LockA implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println(new Date().toString() + " LockA 开始执行");
+            log.debug("LockA 开始执行");
             while (true) {
                 synchronized (DeadLockExample.obj1) {
-                    System.out.println(new Date().toString() + " LockA 锁住 obj1");
-                    Thread.sleep(3000); // 此处等待是给B能锁住机会
+                    log.debug("LockA 锁住 obj1");
+                    // 此处等待是给B能锁住机会
+                    Thread.sleep(3000);
                     synchronized (DeadLockExample.obj2) {
-                        System.out.println(new Date().toString() + " LockA 锁住 obj2");
-                        Thread.sleep(60 * 1000); // 为测试，占用了就不放
+                        log.debug("LockA 锁住 obj2");
+                        // 为测试，占用了就不放
+                        Thread.sleep(60 * 1000);
                     }
                 }
             }
@@ -52,18 +58,22 @@ class LockA implements Runnable {
     }
 }
 
+@Slf4j
 class LockB implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println(new Date().toString() + " LockB 开始执行");
+            log.debug("LockB 开始执行");
             while (true) {
                 synchronized (DeadLockExample.obj2) {
-                    System.out.println(new Date().toString() + " LockB 锁住 obj2");
-                    Thread.sleep(3000); // 此处等待是给A能锁住机会
+                    log.debug("LockB 锁住 obj2");
+                    System.out.println(new Date().toString() + " ");
+                    // 此处等待是给A能锁住机会
+                    Thread.sleep(3000);
                     synchronized (DeadLockExample.obj1) {
-                        System.out.println(new Date().toString() + " LockB 锁住 obj1");
-                        Thread.sleep(60 * 1000); // 为测试，占用了就不放
+                        log.debug("LockB 锁住 obj1");
+                        // 为测试，占用了就不放
+                        Thread.sleep(60 * 1000);
                     }
                 }
             }
