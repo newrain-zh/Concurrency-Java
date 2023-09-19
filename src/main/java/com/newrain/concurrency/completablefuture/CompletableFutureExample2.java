@@ -1,47 +1,36 @@
 package com.newrain.concurrency.completablefuture;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutionException;
 
 /**
- * CompletableFuture 线程串行执行使用示例
+ * CompletableFuture
+ * runAsync、supplyAsync 方法 使用demo
  */
+@Slf4j
 public class CompletableFutureExample2 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        log.info("result={}", future.get());
 
-        ExecutorService executor = Executors.newFixedThreadPool(1);
-        //线程串行执行 不依赖上一次运行结果 无返回值
-        CompletableFuture<Void> future1 = CompletableFuture
-                .supplyAsync(() -> "hello siting", executor)
-                .thenRunAsync(() -> System.out.println("OK"), executor);
-        //线程串行执行 依赖上一次运行结果 无返回值
-        CompletableFuture<Void> future2 = CompletableFuture
-                .supplyAsync(() -> "hello siting", executor)
-                .thenAcceptAsync(System.out::println, executor);
-
-        //线程串行执行 依赖上一次运行结果 有返回值
-        CompletableFuture<String> future3 = CompletableFuture
-                .supplyAsync(() -> "hello world", executor)
-                .thenApplyAsync(data -> {
-                    System.out.println(data);
-                    return "OK";
-                }, executor);
-        System.out.println(future3.join());
-
-        //thenCompose - 任务完成则运行fn，依赖上一个任务的结果，有返回值
-        //第一个异步任务，常量任务
-        CompletableFuture<String> f = CompletableFuture.completedFuture("OK");
-        //第二个异步任务
-        CompletableFuture<String> future = CompletableFuture
-                .supplyAsync(() -> "hello world", executor)
-                .thenComposeAsync(data -> {
-                    System.out.println(data);
-                    return f; //使用第一个任务作为返回
-                }, executor);
-        System.out.println(future.join());
-        executor.shutdown();
-
+        CompletableFuture<java.lang.String> future1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(6000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return "success";
+        });
+        Thread.sleep(8000L);
+        log.info("future1 result={}", future1.getNow("error"));
     }
 }
