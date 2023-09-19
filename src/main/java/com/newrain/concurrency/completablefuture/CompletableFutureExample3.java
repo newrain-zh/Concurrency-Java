@@ -1,47 +1,63 @@
 package com.newrain.concurrency.completablefuture;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * CompletableFuture
+ * 后续处理whenComplete方法 处理demo
+ * whenComplete方法作用感知结果或异常并返回相应信息
+ * whenComplete方法能得到异常异常信息 但是不能修改返回信息
+ */
+@Slf4j
 public class CompletableFutureExample3 {
 
-    /**
-     * 两个CompletableFuture并行执行完，然后执行action，不依赖上两个任务的结果，无返回值
-     */
-    public static void main(String[] args) {
-        //第一个异步任务，常量任务
-        CompletableFuture<String> first = CompletableFuture.completedFuture("hello world");
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        CompletableFuture<Void> future = CompletableFuture
-                //第二个异步任务
-                .supplyAsync(() -> "hello siting", executor)
-                // () -> System.out.println("OK") 是第三个任务
-                .runAfterBothAsync(first, () -> {
-                    try {
-                        System.out.println("OK");
-                        Thread.sleep(4000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        runErrorExample();
 
-                }, executor);
+    }
 
-        CompletableFuture<Void> future2 = CompletableFuture
-                //第二个异步任务
-                .supplyAsync(() -> "hello siting", executor)
-                // () -> System.out.println("OK") 是第三个任务
-                .runAfterBothAsync(first, () -> System.out.println("two"), executor);
+    private static void runRightExample() {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            return 10086;
+        });
 
+        //主线程输出
+        future.whenComplete((result, error) -> {
+            log.info("whenComplete 拨打" + result);
+            log.error("whenComplete error:", error);
+        });
+        future.whenCompleteAsync((result, error) -> {
+            log.info("whenCompleteAsync 拨打" + result);
+            log.error("whenCompleteAsync error:", error);
+        });
+        //使用自定义线程池
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        future.whenCompleteAsync((result, error) -> {
+            log.info("whenCompleteAsync pool 拨打" + result);
+            log.error("whenCompleteAsync pool error:", error);
+            try {
+                Thread.sleep(10000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }, executorService);
+        log.info("executorService shutdown....");
+    }
 
-        //第一个异步任务，常量任务
-        CompletableFuture<String> first1 = CompletableFuture.completedFuture("hello world");
-        CompletableFuture<Void> future1 = CompletableFuture
-                //第二个异步任务
-                .supplyAsync(() -> "hello siting", executor)
-                // (w, s) -> System.out.println(s) 是第三个任务
-                .thenAcceptBothAsync(first, (s, w) -> System.out.println(s), executor);
-//        executor.shutdown();
-
+    private static void runErrorExample() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            String s = null;
+            return s.length();
+        });
+        CompletableFuture<Integer> integerCompletableFuture = future.whenComplete((result, error) -> {
+            log.error("whenComplete error:" + error);
+            log.info("whenComplete result:" + result);
+        });
+        log.info(String.valueOf(integerCompletableFuture.get()));
     }
 }
