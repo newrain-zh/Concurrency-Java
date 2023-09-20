@@ -131,7 +131,9 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
      * @return ExecutorService对象
      */
     public static ExecutorService newCachedThreadPool(String poolName) {
-        return new ThreadPoolMonitor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), poolName);
+        // return new ThreadPoolMonitor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), poolName);
+        //更改这里的参数可以调试线程池的更多情况
+        return new ThreadPoolMonitor(10, 20, Long.MAX_VALUE, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100), poolName);
     }
 
     /**
@@ -157,23 +159,28 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-            if (t.isDaemon()) t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY) t.setPriority(Thread.NORM_PRIORITY);
+            if (t.isDaemon()) {
+                t.setDaemon(false);
+            }
+            if (t.getPriority() != Thread.NORM_PRIORITY) {
+                t.setPriority(Thread.NORM_PRIORITY);
+            }
             return t;
         }
     }
 
     public static void main(String[] args) {
         ExecutorService executorService = ThreadPoolMonitor.newCachedThreadPool("monitor thread");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             Runnable runnable = () -> {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("InterruptedException", e);
                 }
             };
             executorService.execute(runnable);
         }
+//        executorService.shutdown();
     }
 }
