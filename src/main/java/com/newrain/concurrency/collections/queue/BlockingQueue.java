@@ -1,5 +1,7 @@
 package com.newrain.concurrency.collections.queue;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,13 +9,14 @@ import java.util.List;
  * @author newRain
  * @description 阻塞队列实现
  */
+@Slf4j
 public class BlockingQueue {
 
     private final List<Object> arrayList;
     /**
      * 容量git branch -M main
      */
-    private final int limit;
+    private final int  limit;
 
     public BlockingQueue(int size) {
         arrayList = new ArrayList<>(size);
@@ -29,24 +32,24 @@ public class BlockingQueue {
     public synchronized void enqueue(Object item) throws InterruptedException {
         //达到arryList上限 调用wait() 阻塞
         while (this.arrayList.size() == this.limit) {
-            System.out.println("add wait()");
+            log.info("add wait()");
             wait();
         }
         //达到arraylist下限 调用notifyAll() 唤醒所有阻塞线程
-        if (this.arrayList.size() == 0) {
-            System.out.println("add notifyAll()");
+        if (this.arrayList.isEmpty()) {
+            log.info("add notifyAll()");
             notifyAll();
         }
         this.arrayList.add(item);
     }
 
     public synchronized void dequeue() throws InterruptedException {
-        while (this.arrayList.size() == 0) {
-            System.out.println("dequeue wait()");
+        while (this.arrayList.isEmpty()) {
+            log.info("dequeue wait()");
             wait();
         }
         if (this.arrayList.size() == this.limit) {
-            System.out.println("dequeue notifyAll()");
+            log.info("dequeue notifyAll()");
             notifyAll();
         }
         this.arrayList.remove(0);
@@ -55,13 +58,23 @@ public class BlockingQueue {
 
     public static void main(String[] args) throws InterruptedException {
         BlockingQueue blockingQueue = new BlockingQueue(5);
-        blockingQueue.enqueue(10);
-        blockingQueue.enqueue(10);
-        blockingQueue.enqueue(10);
-        blockingQueue.enqueue(10);
-        blockingQueue.enqueue(10);
-        blockingQueue.dequeue();
-        blockingQueue.enqueue(10);
+        new Thread(() -> {
+            for (int i = 0; i < 6; i++) {
+                try {
+                    blockingQueue.enqueue(i);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+        Thread.sleep(2000);
+        new Thread(() -> {
+            try {
+                blockingQueue.dequeue();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
 
