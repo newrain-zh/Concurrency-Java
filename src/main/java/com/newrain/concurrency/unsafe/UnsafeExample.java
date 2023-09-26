@@ -1,5 +1,6 @@
 package com.newrain.concurrency.unsafe;
 
+import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -8,6 +9,7 @@ import java.lang.reflect.Field;
  * @author newRain
  * @description Unsafe使用实例
  */
+@Slf4j
 public class UnsafeExample {
 
     static Unsafe unsafe = null;
@@ -36,18 +38,20 @@ public class UnsafeExample {
             objectNameOffset = unsafe.objectFieldOffset(UnsafeExample.class.getDeclaredField("objectName"));
             staticNameOffset = unsafe.staticFieldOffset(UnsafeExample.class.getDeclaredField("staticName"));
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("error", e);
         }
     }
 
     public static void main(String[] args) {
         UnsafeExample unsafeExample = new UnsafeExample();
         boolean b = unsafe.compareAndSwapLong(unsafeExample, stateOffset, 0, 1);
-        System.out.println(b);
-        System.out.println(stateOffset);
+        log.info("b={}", b);
+        log.info("stateOffset={}", stateOffset);
+        //修改对象
         unsafe.putObject(unsafeExample, objectNameOffset, "haha");//直接修改
+        //修改类
         unsafe.putObject(UnsafeExample.class, staticNameOffset, "hehe");//直接修改
-        System.out.println(unsafeExample.objectName);
-        System.out.println(UnsafeExample.staticName);
+        log.info("unsafeExample.objectName={}", unsafeExample.objectName);
+        log.info("UnsafeExample.staticName={}", staticName);
     }
 }
