@@ -26,6 +26,7 @@ public class DaemonThreadExample {
 
 }
 
+@Slf4j
 class ThreadB extends Thread {
     @Override
     public void run() {
@@ -34,12 +35,13 @@ class ThreadB extends Thread {
             try {
                 Thread.sleep(7);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("ThreadB run error:", e);
             }
         }
     }
 }
 
+@Slf4j
 class ThreadA extends Thread {
     @Override
     public void run() {
@@ -48,7 +50,7 @@ class ThreadA extends Thread {
             try {
                 Thread.sleep(7);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("ThreadA run error:", e);
             }
         }
     }
