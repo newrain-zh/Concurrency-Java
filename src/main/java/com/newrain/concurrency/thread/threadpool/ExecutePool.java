@@ -6,16 +6,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by zzqno on 2017-4-1.
+ * Created by newrain on 2017-4-1.
  */
 public class ExecutePool {
+
     private static ExecutorService executorService;
 
     public ExecutePool(int maxPoolSize, int queueSize) {
         executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
                 maxPoolSize, 120L, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(queueSize));
-
 
 
     }

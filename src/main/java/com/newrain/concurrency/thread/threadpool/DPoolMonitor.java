@@ -3,6 +3,8 @@ package com.newrain.concurrency.thread.threadpool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,19 +19,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author newRain
  * @description 线程池监控示例
  */
-public class ThreadPoolMonitor extends ThreadPoolExecutor {
+public class DPoolMonitor extends ThreadPoolExecutor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolMonitor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DPoolMonitor.class);
 
     /**
      * 保存任务开始执行的时间，当任务结束时，用任务结束时间减去开始时间计算任务执行时间
      */
-    private final ConcurrentHashMap<String, Long> startTimes;
+    private ConcurrentSkipListMap<String, Long> startTimes;
+
+    // 保存任务执行时间
+    private List<Long> taskTimes;
 
     /**
      * 线程池名称，一般以业务名称命名，方便区分
      */
-    private final String poolName;
+    private final        String        poolName;
+    private static final AtomicInteger threadInitNumber = new AtomicInteger(1);
 
     /**
      * 调用父类的构造方法，并初始化HashMap和线程池名称
@@ -41,10 +47,31 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
      * @param workQueue       保存被提交任务的队列
      * @param poolName        线程池名称
      */
-    public ThreadPoolMonitor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, String poolName) {
-        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, Executors.defaultThreadFactory(), poolName);
+    public DPoolMonitor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, String poolName) {
+        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new EventThreadFactory(poolName), poolName);
         allowCoreThreadTimeOut(true);
-
+        this.taskTimes  = Collections.synchronizedList(new ArrayList<>(10));
+        this.startTimes = new ConcurrentSkipListMap<>();
+        /*Thread thread = new Thread(() -> {
+            while (true) {
+//                LOG.info("shutDown={},isTerminated={},isTerminating={}", this.isShutdown(), this.isTerminated(), isTerminating());
+                LOG.info("threadInitNumber={}", threadInitNumber);
+                // 检查队列是否已满
+                if (this.getQueue().remainingCapacity() <= 100) {
+                    LOG.warn("Task queue is full. Current queue size: {}", this.getQueue().size());
+                    this.setDynamicCorePoolSize(maximumPoolSize);
+                    this.setDynamicMaximumPoolSize(maximumPoolSize + 20);
+                    LOG.info("调整后参数，核心线程:{} 最大线程数:{}", this.getCorePoolSize(), this.getMaximumPoolSize());
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();*/
     }
 
 
@@ -59,10 +86,11 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
      * @param threadFactory   线程工厂
      * @param poolName        线程池名称
      */
-    public ThreadPoolMonitor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, String poolName) {
+    public DPoolMonitor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, String poolName) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
-        this.startTimes = new ConcurrentHashMap<>();
         this.poolName   = poolName;
+        this.taskTimes  = Collections.synchronizedList(new ArrayList<>(10));
+        this.startTimes = new ConcurrentSkipListMap<>();
     }
 
     /**
@@ -101,15 +129,33 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
         Long startTime = startTimes.get(String.valueOf(r.hashCode()));
         long now       = System.currentTimeMillis();
         long diff      = (now - startTime);
+        this.taskTimes.add(diff);
+        threadInitNumber.incrementAndGet();
         // 统计任务耗时、初始线程数、核心线程数、正在执行的任务数量、
         // 已完成任务数量、任务总数、队列里缓存的任务数量、池中存在的最大线程数、
         // 最大允许的线程数、线程空闲时间、线程池是否关闭、线程池是否终止
-        LOG.info("{}-pool-monitor-afterExecute: " + "Duration: {} ms, " +
-                "PoolSize: {}, " +
-                "CorePoolSize: {}, " +
-                "Active: {}, " +
-                "Completed: {}, " +
-                "任务数: {}, Queue: {}, LargestPoolSize: {}, " + "MaximumPoolSize: {},  KeepAliveTime: {}, isShutdown: {}, isTerminated: {}", this.poolName, diff, this.getPoolSize(), this.getCorePoolSize(), this.getActiveCount(), this.getCompletedTaskCount(), this.getTaskCount(), this.getQueue().size(), this.getLargestPoolSize(), this.getMaximumPoolSize(), this.getKeepAliveTime(TimeUnit.MILLISECONDS), this.isShutdown(), this.isTerminated());
+        LOG.info("{}-pool-monitor: " + "Duration: {} ms," + " 线程数: {}," + " 核心线程数: {}, " + "活跃线程: {}, " + "Completed: {}, 任务数: {}, 队列容量大小: {}, LargestPoolSize: {}, " + "MaximumPoolSize: {},  KeepAliveTime: {}, isShutdown: {}, isTerminated: {}", this.poolName, diff, this.getPoolSize(), this.getCorePoolSize(), this.getActiveCount(), this.getCompletedTaskCount(), this.getTaskCount(), this.getQueue().remainingCapacity(), this.getLargestPoolSize(), this.getMaximumPoolSize(), this.getKeepAliveTime(TimeUnit.MILLISECONDS), this.isShutdown(), this.isTerminated());
+
+    }
+
+    /**
+     * 动态修改核心线程数
+     */
+    public void setDynamicCorePoolSize(int corePoolSize) {
+        if (corePoolSize < 0) {
+            throw new IllegalArgumentException("核心线程数不能为负数");
+        }
+        super.setCorePoolSize(corePoolSize);
+    }
+
+    /**
+     * 动态修改最大线程数
+     */
+    public void setDynamicMaximumPoolSize(int maximumPoolSize) {
+        if (maximumPoolSize < super.getCorePoolSize()) {
+            throw new IllegalArgumentException("最大线程数不能小于核心线程数");
+        }
+        super.setMaximumPoolSize(maximumPoolSize);
     }
 
     @Override
@@ -118,27 +164,14 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
     }
 
     /**
-     * 创建固定线程池，代码源于Executors.newFixedThreadPool方法，这里增加了poolName
-     *
-     * @param nThreads 线程数量
-     * @param poolName 线程池名称
-     * @return ExecutorService对象
+     * 动态修改队列容量（核心难点）
      */
-    public static ExecutorService newFixedThreadPool(int nThreads, String poolName) {
-        return new ThreadPoolMonitor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), poolName);
+    public void setDynamicQueueCapacity(int newCapacity) {
+        if (newCapacity < 0) {
+            throw new IllegalArgumentException("队列容量不能为负数");
+        }
     }
 
-    /**
-     * 创建缓存型线程池，代码源于Executors.newCachedThreadPool方法，这里增加了poolName
-     *
-     * @param poolName 线程池名称
-     * @return ExecutorService对象
-     */
-    public static ExecutorService newCachedThreadPool(String poolName) {
-        // return new ThreadPoolMonitor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), poolName);
-        //更改这里的参数可以调试线程池的更多情况
-        return new ThreadPoolMonitor(10, 20, Long.MAX_VALUE, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100), poolName);
-    }
 
     /**
      * 生成线程池所用的线程，只是改写了线程池默认的线程工厂，传入线程池名称，便于问题追踪
@@ -173,17 +206,32 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
     }
 
     public static void main(String[] args) {
-        ExecutorService executorService = ThreadPoolMonitor.newCachedThreadPool("monitor thread");
-        for (int i = 0; i < 100; i++) {
+     testCoreSize();
+    }
+    public static void testPool(){
+        DPoolMonitor poolMonitor = new DPoolMonitor(10, 20, 50, TimeUnit.SECONDS, new LinkedBlockingQueue<>(100), "monitor thread");
+        for (int i = 0; i < 1000; i++) {
+            System.out.println("执行" + i);
             Runnable runnable = () -> {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     LOG.error("InterruptedException", e);
                 }
             };
-            executorService.execute(runnable);
+            try {
+                poolMonitor.execute(runnable);
+            }catch (Exception e){
+
+            }
         }
-//        executorService.shutdown();
+        LOG.info("总共执行了:{}任务", threadInitNumber);
+        poolMonitor.shutdown();
+    }
+
+    public static void testCoreSize(){
+        DPoolMonitor poolMonitor = new DPoolMonitor(10, 20, 50, TimeUnit.SECONDS, new LinkedBlockingQueue<>(100), "monitor thread");
+        poolMonitor.setCorePoolSize(50);
+        LOG.info("coreSize={}",poolMonitor.getCorePoolSize());
     }
 }
