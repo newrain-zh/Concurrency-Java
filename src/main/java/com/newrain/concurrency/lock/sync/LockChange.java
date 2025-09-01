@@ -1,10 +1,10 @@
 package com.newrain.concurrency.lock.sync;
 
 /**
- * Created by zzqno on 2017-6-3.
+ * Created by newrain-zh on 2017-6-3.
  * 锁对象的改变
  */
-public class LcokChange {
+public class LockChange {
 
     private String lock = "123";
 
@@ -22,10 +22,10 @@ public class LcokChange {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        LcokChange lcokChange = new LcokChange();
-        ThreadA threadA = new ThreadA(lcokChange);
+        LockChange lockChange = new LockChange();
+        ThreadA    threadA    = new ThreadA(lockChange);
         threadA.setName("A");
-        ThreadB threadB = new ThreadB(lcokChange);
+        ThreadB threadB = new ThreadB(lockChange);
         threadB.setName("B");
         threadA.start();
         Thread.sleep(50);
@@ -36,27 +36,28 @@ public class LcokChange {
 }
 
 class ThreadA extends Thread {
-    private LcokChange lcokChange;
+    private LockChange lockChange;
 
-    public ThreadA(LcokChange lcokChange) {
-        this.lcokChange = lcokChange;
+    public ThreadA(LockChange lockChange) {
+        this.lockChange = lockChange;
     }
 
     @Override
     public void run() {
-        lcokChange.testMethod();
+        lockChange.testMethod();
     }
 }
 
 class ThreadB extends Thread {
-    private LcokChange lcokChange;
 
-    public ThreadB(LcokChange lcokChange) {
-        this.lcokChange = lcokChange;
+    private LockChange lockChange;
+
+    public ThreadB(LockChange lockChange) {
+        this.lockChange = lockChange;
     }
 
     @Override
     public void run() {
-        lcokChange.testMethod();
+        lockChange.testMethod();
     }
 }
