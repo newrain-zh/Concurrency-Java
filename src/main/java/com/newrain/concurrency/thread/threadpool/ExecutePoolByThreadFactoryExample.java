@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 /**
  * @author newRain
  */
-public class ExceutePoolByThreadFactoryExample {
+public class ExecutePoolByThreadFactoryExample {
 
 
     private static Integer maxPoolSize = 100;

@@ -14,8 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Data
 public class ThreadFactoryBuilder implements ThreadFactory {
 
-    private AtomicInteger count;
-    private String        name;
+    private              AtomicInteger count;
+    private              String        name;
+    private static final AtomicInteger poolNumber   = new AtomicInteger(1);
+    private final        AtomicInteger threadNumber = new AtomicInteger(1);
 
     public ThreadFactoryBuilder(String name) {
         count     = new AtomicInteger(0);
@@ -24,7 +26,7 @@ public class ThreadFactoryBuilder implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        Thread thread = new Thread();
+        Thread thread = new Thread(r);
         thread.setName(name);
         count.getAndAdd(1);
         return thread;
