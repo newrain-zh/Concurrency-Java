@@ -54,7 +54,7 @@ public class ConditionExample {
         String string;
         lock.lock();
         try {
-            while (buffer.size() == 0) {
+            while (buffer.isEmpty()) {
                 fullCondition.await();
             }
             string = buffer.poll();
