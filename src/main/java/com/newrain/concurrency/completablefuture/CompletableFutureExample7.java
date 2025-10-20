@@ -27,9 +27,7 @@ public class CompletableFutureExample7 {
             // 获取得到今天的所有课程
             return list;
         });
-        future.thenRun(() -> {
-            log.info("runRightExample->执行完成");
-        });
+        future.thenRun(() -> log.info("runRightExample->执行完成"));
     }
 
     private static void runErrorExample() {
@@ -40,9 +38,7 @@ public class CompletableFutureExample7 {
             return s.length();
         });
         // thenAccept最终处理
-        future.thenRun(() -> {
-            log.info("runErrorExample->执行完成");
-        });
+        future.thenRun(() -> log.info("runErrorExample->执行完成"));
 
     }
 }

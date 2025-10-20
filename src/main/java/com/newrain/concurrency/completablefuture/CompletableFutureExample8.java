@@ -18,20 +18,15 @@ import java.util.stream.Stream;
 public class CompletableFutureExample8 {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        runErrorExample();
+//        runErrorExample();
         //runRightExample();
+        runRightExample1();
     }
 
     private static void runRightExample() throws ExecutionException, InterruptedException {
         // 开启一个异步方法
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-            return "hello";
-        }).thenCompose(str -> CompletableFuture.supplyAsync(() -> {
-            return str + " world";
-        }));
-        CompletableFuture<String> stringCompletableFuture = future.thenCompose(str -> CompletableFuture.supplyAsync(() -> {
-            return str + " world";
-        }));
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> "hello").thenCompose(str -> CompletableFuture.supplyAsync(() -> str + " world"));
+        CompletableFuture<String> stringCompletableFuture = future.thenCompose(str -> CompletableFuture.supplyAsync(() -> str + " world"));
         log.info(future.get());
         log.info(stringCompletableFuture.get());
     }

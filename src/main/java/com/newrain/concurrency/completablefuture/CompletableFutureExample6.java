@@ -40,7 +40,7 @@ public class CompletableFutureExample6 {
             String s = null;
             return s.length();
         });
-        // thenAccept最终处理
+        // 如果出现异常这里不会执行
         future.thenAccept((result) -> {
             log.info("thenAccept={}", result);//无输出
         });
