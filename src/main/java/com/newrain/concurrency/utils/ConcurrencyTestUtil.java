@@ -25,7 +25,7 @@ public class ConcurrencyTestUtil {
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    //todo 用于测试的代码
+                    //todo  用于测试的代码
                     semaphore.release();
                 } catch (Exception e) {
                     log.error("exception:", e);
