@@ -1,15 +1,18 @@
 package com.newrain.concurrency.lock.sync.string;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Created by zzqno on 2017-6-3.
  */
+@Slf4j
 public class StringService {
 
     public static void print(String strParm) {
         try {
             synchronized (strParm) {
                 while (true) {
-                    System.out.println(Thread.currentThread().getName());
+                    log.info("当前线程 name={}", Thread.currentThread().getName());
                     Thread.sleep(1000);
                 }
             }
@@ -31,6 +34,7 @@ public class StringService {
 }
 
 class ThreadB extends Thread {
+
     private StringService stringService;
 
     public ThreadB(StringService stringService) {
